@@ -146,6 +146,26 @@ export default function SalaryPassbook() {
     setEntries(next);
     persist(next);
   };
+  const exportData = () => {
+    const dataStr = JSON.stringify(entries);
+    // スマホでも確実にコピーできるようにプロンプトを表示
+    prompt("以下のテキストをすべてコピーして、メモ帳などに保存してください。", dataStr);
+  };
+
+  const importData = () => {
+    const input = prompt("保存したバックアップテキストを貼り付けてください。※現在のデータは上書きされます。");
+    if (!input) return;
+    try {
+      const parsed = JSON.parse(input);
+      if (Array.isArray(parsed)) {
+        setEntries(parsed);
+        persist(parsed);
+        alert("データを復元しました！");
+      }
+    } catch (e) {
+      alert("データの形式が正しくありません。");
+    }
+  };
 
   const totals = useMemo(() => {
     let juku = 0,
@@ -598,6 +618,20 @@ export default function SalaryPassbook() {
                   </div>
                 </div>
               )}
+            </div>
+                        <div style={{ marginTop: 40, borderTop: `1px dashed ${COLORS.line}`, paddingTop: 20, display: "flex", gap: 10, justifyContent: "center" }}>
+              <button
+                onClick={exportData}
+                style={{ padding: "8px 16px", borderRadius: 6, border: `1px solid ${COLORS.inkSoft}`, background: "transparent", color: COLORS.inkSoft, fontSize: 12, cursor: "pointer" }}
+              >
+                データをバックアップ
+              </button>
+              <button
+                onClick={importData}
+                style={{ padding: "8px 16px", borderRadius: 6, border: `1px solid ${COLORS.inkSoft}`, background: "transparent", color: COLORS.inkSoft, fontSize: 12, cursor: "pointer" }}
+              >
+                データを復元
+              </button>
             </div>
           </div>
         </div>
