@@ -80,7 +80,6 @@ export default function SalaryPassbook() {
     } catch (e) {
       console.error("保存に失敗しました", e);
     } finally {
-      // 保存が速すぎるため、UIとして「記帳中…」を少しだけ見せるための遅延
       setTimeout(() => setSaving(false), 300);
     }
   };
@@ -110,8 +109,8 @@ export default function SalaryPassbook() {
     setTimeout(() => setStampPulse(false), 500);
   };
 
-  const [viewMode, setViewMode] = useState("monthly"); // "monthly" | "yearly"
-  const [editTarget, setEditTarget] = useState(null); // { month, type }
+  const [viewMode, setViewMode] = useState("monthly");
+  const [editTarget, setEditTarget] = useState(null);
   const [editAmount, setEditAmount] = useState("");
 
   const openEditCell = (month, type) => {
@@ -260,8 +259,8 @@ export default function SalaryPassbook() {
         .pulse { animation: stampIn 0.45s ease-out; }
       `}</style>
 
-      <div style={{ width: "100%", maxWidth: 880 }}>
-        {/* Cover / spine */}
+      <div style={{ width: "100%", maxWidth: 840 }}>
+        {/* Cover */}
         <div
           className="book-shadow"
           style={{
@@ -271,29 +270,7 @@ export default function SalaryPassbook() {
             overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              width: 40,
-              background: `linear-gradient(180deg, #1F3A54 0%, ${COLORS.ink} 100%)`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <span
-              style={{
-                writingMode: "vertical-rl",
-                color: COLORS.paper,
-                fontFamily: "'Zen Old Mincho', serif",
-                fontSize: 15,
-                letterSpacing: 4,
-                fontWeight: 700,
-              }}
-            >
-              給与通帳
-            </span>
-          </div>
+          {/* 左側の青い帯を削除しました */}
 
           <div style={{ flex: 1, padding: "20px 22px 26px" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
@@ -521,100 +498,104 @@ export default function SalaryPassbook() {
               {entries.length === 0 ? (
                 <EmptyNote text="まだ記録がありません。上のフォームから追加してください" />
               ) : viewMode === "monthly" ? (
-                <div style={{ marginTop: 10, border: `1px solid ${COLORS.line}`, borderRadius: 8, overflow: "hidden" }}>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "80px 1fr 1fr 1fr",
-                      gap: 8,
-                      padding: "8px 12px",
-                      background: COLORS.paperDeep,
-                      fontSize: 11,
-                      color: COLORS.inkSoft,
-                      fontWeight: 500,
-                    }}
-                  >
-                    <span>月</span>
-                    <span style={{ textAlign: "right", color: COLORS.juku }}>塾</span>
-                    <span style={{ textAlign: "right", color: COLORS.conveni }}>コンビニ</span>
-                    <span style={{ textAlign: "right" }}>合計</span>
-                  </div>
-                  {monthlyRows.map((row) => (
+                <div style={{ marginTop: 10, border: `1px solid ${COLORS.line}`, borderRadius: 8, overflowX: "auto", whiteSpace: "nowrap" }}>
+                  <div style={{ minWidth: 320 }}>
                     <div
-                      key={row.month}
-                      className="row-hover"
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "80px 1fr 1fr 1fr",
+                        gridTemplateColumns: "64px 1fr 1fr 1.2fr",
                         gap: 8,
-                        padding: "9px 12px",
-                        borderTop: `1px solid ${COLORS.line}`,
-                        fontSize: 13,
-                        alignItems: "center",
+                        padding: "8px 12px",
+                        background: COLORS.paperDeep,
+                        fontSize: 11,
+                        color: COLORS.inkSoft,
+                        fontWeight: 500,
                       }}
                     >
-                      <span className="num">{monthLabelJa(row.month)}</span>
-                      <AmountCell
-                        value={row.juku}
-                        color={COLORS.juku}
-                        onClick={() => openEditCell(row.month, "juku")}
-                      />
-                      <AmountCell
-                        value={row.conveni}
-                        color={COLORS.conveni}
-                        onClick={() => openEditCell(row.month, "conveni")}
-                      />
-                      <span className="num" style={{ textAlign: "right", fontWeight: 700 }}>
-                        {yen(row.total)}
-                      </span>
+                      <span>月</span>
+                      <span style={{ textAlign: "right", color: COLORS.juku }}>塾</span>
+                      <span style={{ textAlign: "right", color: COLORS.conveni }}>コンビニ</span>
+                      <span style={{ textAlign: "right" }}>合計</span>
                     </div>
-                  ))}
+                    {monthlyRows.map((row) => (
+                      <div
+                        key={row.month}
+                        className="row-hover"
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "64px 1fr 1fr 1.2fr",
+                          gap: 8,
+                          padding: "9px 12px",
+                          borderTop: `1px solid ${COLORS.line}`,
+                          fontSize: 13,
+                          alignItems: "center",
+                        }}
+                      >
+                        <span className="num">{monthLabelJa(row.month)}</span>
+                        <AmountCell
+                          value={row.juku}
+                          color={COLORS.juku}
+                          onClick={() => openEditCell(row.month, "juku")}
+                        />
+                        <AmountCell
+                          value={row.conveni}
+                          color={COLORS.conveni}
+                          onClick={() => openEditCell(row.month, "conveni")}
+                        />
+                        <span className="num" style={{ textAlign: "right", fontWeight: 700 }}>
+                          {yen(row.total)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : (
-                <div style={{ marginTop: 10, border: `1px solid ${COLORS.line}`, borderRadius: 8, overflow: "hidden" }}>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "70px 1fr 1fr 1fr",
-                      gap: 8,
-                      padding: "8px 12px",
-                      background: COLORS.paperDeep,
-                      fontSize: 11,
-                      color: COLORS.inkSoft,
-                      fontWeight: 500,
-                    }}
-                  >
-                    <span>年</span>
-                    <span style={{ textAlign: "right", color: COLORS.juku }}>塾</span>
-                    <span style={{ textAlign: "right", color: COLORS.conveni }}>コンビニ</span>
-                    <span style={{ textAlign: "right" }}>合計</span>
-                  </div>
-                  {yearlySummary.map((row) => (
+                <div style={{ marginTop: 10, border: `1px solid ${COLORS.line}`, borderRadius: 8, overflowX: "auto", whiteSpace: "nowrap" }}>
+                  <div style={{ minWidth: 320 }}>
                     <div
-                      key={row.year}
-                      className="row-hover"
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "70px 1fr 1fr 1fr",
+                        gridTemplateColumns: "64px 1fr 1fr 1.2fr",
                         gap: 8,
-                        padding: "9px 12px",
-                        borderTop: `1px solid ${COLORS.line}`,
-                        fontSize: 13,
-                        alignItems: "center",
+                        padding: "8px 12px",
+                        background: COLORS.paperDeep,
+                        fontSize: 11,
+                        color: COLORS.inkSoft,
+                        fontWeight: 500,
                       }}
                     >
-                      <span className="num">{row.year}年</span>
-                      <span className="num" style={{ textAlign: "right", color: COLORS.juku }}>
-                        {yen(row.juku)}
-                      </span>
-                      <span className="num" style={{ textAlign: "right", color: COLORS.conveni }}>
-                        {yen(row.conveni)}
-                      </span>
-                      <span className="num" style={{ textAlign: "right", fontWeight: 700 }}>
-                        {yen(row.total)}
-                      </span>
+                      <span>年</span>
+                      <span style={{ textAlign: "right", color: COLORS.juku }}>塾</span>
+                      <span style={{ textAlign: "right", color: COLORS.conveni }}>コンビニ</span>
+                      <span style={{ textAlign: "right" }}>合計</span>
                     </div>
-                  ))}
+                    {yearlySummary.map((row) => (
+                      <div
+                        key={row.year}
+                        className="row-hover"
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "64px 1fr 1fr 1.2fr",
+                          gap: 8,
+                          padding: "9px 12px",
+                          borderTop: `1px solid ${COLORS.line}`,
+                          fontSize: 13,
+                          alignItems: "center",
+                        }}
+                      >
+                        <span className="num">{row.year}年</span>
+                        <span className="num" style={{ textAlign: "right", color: COLORS.juku }}>
+                          {yen(row.juku)}
+                        </span>
+                        <span className="num" style={{ textAlign: "right", color: COLORS.conveni }}>
+                          {yen(row.conveni)}
+                        </span>
+                        <span className="num" style={{ textAlign: "right", fontWeight: 700 }}>
+                          {yen(row.total)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
